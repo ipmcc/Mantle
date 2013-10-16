@@ -102,8 +102,8 @@ describe(@"JSON transformers", ^{
 				[mutableDictionaries addObject:dict];
 			}
 
-			uniqueModels[2] = NSNull.null;
-			mutableDictionaries[2] = NSNull.null;
+			[uniqueModels setObject: [NSNull null] atIndexedSubscript: 2];
+			[mutableDictionaries setObject: [NSNull null] atIndexedSubscript: 2];
 
 			models = [uniqueModels copy];
 			JSONDictionaries = [mutableDictionaries copy];

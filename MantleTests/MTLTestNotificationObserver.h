@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 
 @interface MTLTestNotificationObserver : NSObject
+{
+	BOOL _receivedNotification;
+}
 
 @property (nonatomic, assign, readonly) BOOL receivedNotification;
 

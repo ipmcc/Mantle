@@ -81,7 +81,7 @@ static BOOL MTLValidateAndSetValue(id obj, NSString *key, id value, BOOL forceUp
 #pragma mark Lifecycle
 
 + (instancetype)modelWithDictionary:(NSDictionary *)dictionary error:(NSError **)error {
-	return [[self alloc] initWithDictionary:dictionary error:error];
+	return [[[self alloc] initWithDictionary:dictionary error:error] autorelease];
 }
 
 - (instancetype)init {
@@ -102,7 +102,11 @@ static BOOL MTLValidateAndSetValue(id obj, NSString *key, id value, BOOL forceUp
 		if ([value isEqual:NSNull.null]) value = nil;
 
 		BOOL success = MTLValidateAndSetValue(self, key, value, YES, error);
-		if (!success) return nil;
+		if (!success)
+		{
+			[self autorelease];
+			return nil;
+		}
 	}
 
 	return self;

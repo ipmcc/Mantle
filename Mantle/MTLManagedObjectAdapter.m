@@ -102,6 +102,10 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 
 @implementation MTLManagedObjectAdapter
 
+@synthesize modelClass = _modelClass;
+@synthesize managedObjectKeysByPropertyKey = _managedObjectKeysByPropertyKey;
+@synthesize relationshipModelClassesByPropertyKey = _relationshipModelClassesByPropertyKey;
+
 #pragma mark Lifecycle
 
 - (id)init {
@@ -170,7 +174,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 		};
 
 		BOOL (^deserializeRelationship)(NSRelationshipDescription *) = ^(NSRelationshipDescription *relationshipDescription) {
-			Class nestedClass = self.relationshipModelClassesByPropertyKey[propertyKey];
+			Class nestedClass = [self.relationshipModelClassesByPropertyKey objectForKey: propertyKey];
 			if (nestedClass == nil) {
 				[NSException raise:NSInvalidArgumentException format:@"No class specified for decoding relationship at key \"%@\" in managed object %@", managedObjectKey, managedObject];
 			}
@@ -246,7 +250,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 			}
 		};
 
-		if (!deserializeProperty(managedObjectProperties[managedObjectKey])) return nil;
+		if (!deserializeProperty([managedObjectProperties objectForKey:managedObjectKey])) return nil;
 	}
 
 	return model;
@@ -290,7 +294,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 		}
 	}
 
-	MTLManagedObjectAdapter *adapter = [[self alloc] initWithModelClass:modelClass];
+	MTLManagedObjectAdapter *adapter = [[[self alloc] initWithModelClass:modelClass] autorelease];
 	return [adapter modelFromManagedObject:managedObject processedObjects:processedObjects error:error];
 }
 
@@ -316,7 +320,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 		__block NSError *fetchRequestError = nil;
 		__block BOOL encountedError = NO;
 		managedObject = performInContext(context, ^ id {
-			NSFetchRequest *fetchRequest = [[fetchRequestClass alloc] init];
+			NSFetchRequest *fetchRequest = [[[fetchRequestClass alloc] init] autorelease];
 			fetchRequest.entity = [entityDescriptionClass entityForName:entityName inManagedObjectContext:context];
 			fetchRequest.predicate = uniquingPredicate;
 			fetchRequest.returnsObjectsAsFaults = NO;
@@ -369,7 +373,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 	// Assign all errors to this variable to work around a memory problem.
 	//
 	// See https://github.com/github/Mantle/pull/120 for more context.
-	__block NSError *tmpError;
+	__block NSError *tmpError = nil;
 
 	// Pre-emptively consider this object processed, so that we don't get into
 	// any cycles when processing its relationships.
@@ -407,7 +411,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 					NSLocalizedFailureReasonErrorKey: failureReason
 				};
 
-				tmpError = [NSError errorWithDomain:MTLManagedObjectAdapterErrorDomain code:MTLManagedObjectAdapterErrorUnsupportedRelationshipClass userInfo:userInfo];
+				tmpError = [[NSError errorWithDomain:MTLManagedObjectAdapterErrorDomain code:MTLManagedObjectAdapterErrorUnsupportedRelationshipClass userInfo:userInfo] retain];
 
 				return nil;
 			}
@@ -427,7 +431,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 						NSLocalizedFailureReasonErrorKey: failureReason
 					};
 
-					tmpError = [NSError errorWithDomain:MTLManagedObjectAdapterErrorDomain code:MTLManagedObjectAdapterErrorUnsupportedRelationshipClass userInfo:userInfo];
+					tmpError = [[NSError errorWithDomain:MTLManagedObjectAdapterErrorDomain code:MTLManagedObjectAdapterErrorUnsupportedRelationshipClass userInfo:userInfo] retain];
 
 					return NO;
 				}
@@ -466,7 +470,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 					NSLocalizedFailureReasonErrorKey: failureReason
 				};
 
-				tmpError = [NSError errorWithDomain:MTLManagedObjectAdapterErrorDomain code:MTLManagedObjectAdapterErrorInvalidManagedObjectKey userInfo:userInfo];
+				tmpError = [[NSError errorWithDomain:MTLManagedObjectAdapterErrorDomain code:MTLManagedObjectAdapterErrorInvalidManagedObjectKey userInfo:userInfo] retain];
 
 				return NO;
 			}
@@ -485,13 +489,13 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 					NSLocalizedFailureReasonErrorKey: failureReason
 				};
 
-				tmpError = [NSError errorWithDomain:MTLManagedObjectAdapterErrorDomain code:MTLManagedObjectAdapterErrorUnsupportedManagedObjectPropertyType userInfo:userInfo];
+				tmpError = [[NSError errorWithDomain:MTLManagedObjectAdapterErrorDomain code:MTLManagedObjectAdapterErrorUnsupportedManagedObjectPropertyType userInfo:userInfo] retain];
 
 				return NO;
 			}
 		};
 		
-		if (!serializeProperty(managedObjectProperties[managedObjectKey])) {
+		if (!serializeProperty([managedObjectProperties objectForKey:managedObjectKey])) {
 			performInContext(context, ^ id {
 				[context deleteObject:managedObject];
 				return nil;
@@ -513,6 +517,8 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 		*error = tmpError;
 	}
 
+	[tmpError autorelease];
+	
 	return managedObject;
 }
 
@@ -542,7 +548,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 		return (__bridge id)existingManagedObject;
 	}
 
-	MTLManagedObjectAdapter *adapter = [[self alloc] initWithModelClass:model.class];
+	MTLManagedObjectAdapter *adapter = [[[self alloc] initWithModelClass:model.class] autorelease];
 	return [adapter managedObjectFromModel:model insertingIntoContext:context processedObjects:processedObjects error:error];
 }
 
@@ -571,7 +577,7 @@ static const NSInteger MTLManagedObjectAdapterErrorExceptionThrown = 1;
 - (NSString *)managedObjectKeyForKey:(NSString *)key {
 	NSParameterAssert(key != nil);
 
-	id managedObjectKey = self.managedObjectKeysByPropertyKey[key];
+	id managedObjectKey = [self.managedObjectKeysByPropertyKey objectForKey: key];
 	if ([managedObjectKey isEqual:NSNull.null]) return nil;
 
 	if (managedObjectKey == nil) {

@@ -11,13 +11,13 @@
 @implementation NSDictionary (MTLManipulationAdditions)
 
 - (NSDictionary *)mtl_dictionaryByAddingEntriesFromDictionary:(NSDictionary *)dictionary {
-	NSMutableDictionary *result = [self mutableCopy];
+	NSMutableDictionary *result = [[self mutableCopy] autorelease];
 	[result addEntriesFromDictionary:dictionary];
 	return result;
 }
 
 - (NSDictionary *)mtl_dictionaryByRemovingEntriesWithKeys:(NSSet *)keys {
-	NSMutableDictionary *result = [self mutableCopy];
+	NSMutableDictionary *result = [[self mutableCopy] autorelease];
 	[result removeObjectsForKeys:keys.allObjects];
 	return result;
 }

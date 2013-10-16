@@ -24,6 +24,9 @@
 
 @implementation MTLValueTransformer
 
+@synthesize forwardBlock = _forwardBlock;
+@synthesize reverseBlock = _reverseBlock;
+
 #pragma mark Lifecycle
 
 + (instancetype)transformerWithBlock:(MTLValueTransformerBlock)transformationBlock {
@@ -44,10 +47,18 @@
 	self = [super init];
 	if (self == nil) return nil;
 
-	_forwardBlock = [forwardBlock copy];
-	_reverseBlock = [reverseBlock copy];
+	_forwardBlock = Block_copy(forwardBlock);
+	_reverseBlock = Block_copy(reverseBlock);
 
 	return self;
+}
+
+- (void)dealloc
+{
+    Block_release(_forwardBlock);
+	Block_release(_reverseBlock);
+	
+	[super dealloc];
 }
 
 #pragma mark NSValueTransformer

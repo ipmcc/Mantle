@@ -14,23 +14,23 @@ it(@"should have default encoding behaviors", ^{
 	NSDictionary *behaviors = MTLTestModel.encodingBehaviorsByPropertyKey;
 	expect(behaviors).notTo.beNil();
 
-	expect(behaviors[@"name"]).to.equal(@(MTLModelEncodingBehaviorUnconditional));
-	expect(behaviors[@"count"]).to.equal(@(MTLModelEncodingBehaviorUnconditional));
-	expect(behaviors[@"weakModel"]).to.equal(@(MTLModelEncodingBehaviorConditional));
-	expect(behaviors[@"dynamicName"]).to.beNil();
+	expect([behaviors objectForKey:@"name"]).to.equal(@(MTLModelEncodingBehaviorUnconditional));
+	expect([behaviors objectForKey:@"count"]).to.equal(@(MTLModelEncodingBehaviorUnconditional));
+	expect([behaviors objectForKey:@"weakModel"]).to.equal(@(MTLModelEncodingBehaviorConditional));
+	expect([behaviors objectForKey:@"dynamicName"]).to.beNil();
 });
 
 it(@"should have default allowed classes", ^{
 	NSDictionary *allowedClasses = MTLTestModel.allowedSecureCodingClassesByPropertyKey;
 	expect(allowedClasses).notTo.beNil();
 
-	expect(allowedClasses[@"name"]).to.equal(@[ NSString.class ]);
-	expect(allowedClasses[@"count"]).to.equal(@[ NSValue.class ]);
-	expect(allowedClasses[@"weakModel"]).to.equal(@[ MTLEmptyTestModel.class ]);
+	expect([allowedClasses objectForKey:@"name"]).to.equal(@[ NSString.class ]);
+	expect([allowedClasses objectForKey:@"count"]).to.equal(@[ NSValue.class ]);
+	expect([allowedClasses objectForKey:@"weakModel"]).to.equal(@[ MTLEmptyTestModel.class ]);
 	
 	// Not encoded into archives.
-	expect(allowedClasses[@"nestedName"]).to.beNil();
-	expect(allowedClasses[@"dynamicName"]).to.beNil();
+	expect([allowedClasses objectForKey:@"nestedName"]).to.beNil();
+	expect([allowedClasses objectForKey:@"dynamicName"]).to.beNil();
 });
 
 it(@"should default to version 0", ^{
@@ -99,9 +99,9 @@ describe(@"archiving", ^{
 
 		NSArray *objects = [NSKeyedUnarchiver unarchiveObjectWithData:data];
 		expect(objects.count).to.equal(2);
-		expect(objects[1]).to.equal(emptyModel);
+		expect([objects objectAtIndex: 1]).to.equal(emptyModel);
 		
-		MTLTestModel *unarchivedModel = objects[0];
+		MTLTestModel *unarchivedModel = [objects objectAtIndex:0];
 		expect(unarchivedModel).to.equal(model);
 		expect(unarchivedModel.weakModel).to.equal(emptyModel);
 	});

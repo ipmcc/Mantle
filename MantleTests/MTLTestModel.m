@@ -18,6 +18,11 @@ static NSUInteger modelVersion = 1;
 @end
 
 @implementation MTLTestModel
+@synthesize name = _name;
+@synthesize count = _count;
+@synthesize nestedName = _nestedName;
+@dynamic dynamicName;
+@synthesize weakModel = _weakModel;
 
 #pragma mark Properties
 
@@ -106,9 +111,9 @@ static NSUInteger modelVersion = 1;
 	NSParameterAssert(fromVersion == 1);
 
 	return @{
-		@"name": externalRepresentation[@"username"],
-		@"nestedName": externalRepresentation[@"nested"][@"name"],
-		@"count": @([externalRepresentation[@"count"] integerValue])
+			 @"name": [externalRepresentation objectForKey: @"username"],
+			 @"nestedName": [[externalRepresentation objectForKey: @"nested"] objectForKey: @"name"],
+			 @"count": @([[externalRepresentation objectForKey:@"count"] integerValue])
 	};
 }
 
@@ -129,7 +134,7 @@ static NSUInteger modelVersion = 1;
 + (Class)classForParsingJSONDictionary:(NSDictionary *)JSONDictionary {
 	NSParameterAssert(JSONDictionary != nil);
 
-	if (JSONDictionary[@"username"] == nil) {
+	if ([JSONDictionary objectForKey:@"username"] == nil) {
 		return nil;
 	} else {
 		return MTLTestModel.class;
@@ -139,6 +144,8 @@ static NSUInteger modelVersion = 1;
 @end
 
 @implementation MTLValidationModel
+
+@synthesize name = _name;
 
 - (BOOL)validateName:(NSString **)name error:(NSError **)error {
 	if (*name != nil) return YES;

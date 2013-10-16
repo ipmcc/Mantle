@@ -13,7 +13,7 @@
 SpecBegin(MTLModelValidation)
 
 it(@"should fail with incorrect values", ^{
-	MTLValidationModel *model = [[MTLValidationModel alloc] init];
+	MTLValidationModel *model = [[[MTLValidationModel alloc] init] autorelease];
 
 	NSError *error = nil;
 	BOOL success = [model validate:&error];
@@ -25,7 +25,7 @@ it(@"should fail with incorrect values", ^{
 });
 
 it(@"should succeed with correct values", ^{
-	MTLValidationModel *model = [[MTLValidationModel alloc] initWithDictionary:@{ @"name": @"valid" } error:NULL];
+	MTLValidationModel *model = [[[MTLValidationModel alloc] initWithDictionary:@{ @"name": @"valid" } error:NULL] autorelease];
 
 	NSError *error = nil;
 	BOOL success = [model validate:&error];

@@ -14,6 +14,10 @@ typedef id (^MTLValueTransformerBlock)(id);
 // A value transformer supporting block-based transformation.
 //
 @interface MTLValueTransformer : NSValueTransformer
+{
+	MTLValueTransformerBlock _forwardBlock;
+	MTLValueTransformerBlock _reverseBlock;
+}
 
 // Returns a transformer which transforms values using the given block. Reverse
 // transformations will not be allowed.

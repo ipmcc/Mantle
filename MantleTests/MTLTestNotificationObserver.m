@@ -14,6 +14,8 @@
 
 @implementation MTLTestNotificationObserver
 
+@synthesize receivedNotification = _receivedNotification;
+
 - (void)notificationPosted:(NSNotification *)notification {
 	NSParameterAssert(notification != nil);
 

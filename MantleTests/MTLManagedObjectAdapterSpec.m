@@ -99,7 +99,7 @@ describe(@"with a confined context", ^{
 			expect(parentModel.unorderedChildren).to.haveCountOf(3);
 
 			for (NSUInteger i = 0; i < 3; i++) {
-				MTLChildTestModel *child = parentModel.orderedChildren[i];
+				MTLChildTestModel *child = [parentModel.orderedChildren objectAtIndex:i];
 				expect(child).to.beKindOf(MTLChildTestModel.class);
 
 				expect(child.childID).to.equal(i);
@@ -176,7 +176,7 @@ describe(@"with a confined context", ^{
 			expect(parent.unorderedChildren).to.haveCountOf(3);
 
 			for (NSUInteger i = 0; i < 3; i++) {
-				MTLChild *child = parent.orderedChildren[i];
+				MTLChild *child = [parent.orderedChildren objectAtIndex:i];
 				expect(child).to.beKindOf(MTLChild.class);
 
 				expect(child.entity).to.equal(childEntity);
@@ -238,11 +238,11 @@ describe(@"with a confined context", ^{
 			expect(parentOne.orderedChildren).to.haveCountOf(3);
 			expect(parentOne.unorderedChildren).to.haveCountOf(3);
 
-			MTLChild *child1Parent1 = parentOne.orderedChildren[0];
-			MTLChild *child2Parent1 = parentOne.orderedChildren[1];
-			MTLChild *child3Parent1 = parentOne.orderedChildren[2];
+			MTLChild *child1Parent1 = [parentOne.orderedChildren objectAtIndex:0];
+			MTLChild *child2Parent1 = [parentOne.orderedChildren objectAtIndex:1];
+			MTLChild *child3Parent1 = [parentOne.orderedChildren objectAtIndex:2];
 
-			MTLParentTestModel *parentModelCopy = [parentModel copy];
+			MTLParentTestModel *parentModelCopy = [[parentModel copy] autorelease];
 			[[parentModelCopy mutableOrderedSetValueForKey:@"orderedChildren"] removeObjectAtIndex:1];
 
 			MTLChildTestModel *childToDeleteModel = [parentModelCopy.unorderedChildren anyObject];
@@ -262,8 +262,8 @@ describe(@"with a confined context", ^{
 				expect(child.childID).notTo.equal(childToDeleteModel.childID);
 			}
 
-			MTLChild *child1Parent2 = parentTwo.orderedChildren[0];
-			MTLChild *child2Parent2 = parentTwo.orderedChildren[1];
+			MTLChild *child1Parent2 = [parentTwo.orderedChildren  objectAtIndex:0];
+			MTLChild *child2Parent2 = [parentTwo.orderedChildren  objectAtIndex:1];
 			expect(child1Parent2).to.equal(child1Parent1);
 			expect(child2Parent2).to.equal(child3Parent1);
 		});

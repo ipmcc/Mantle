@@ -48,15 +48,19 @@ static NSString * const MTLJSONAdapterThrownExceptionErrorKey = @"MTLJSONAdapter
 
 @implementation MTLJSONAdapter
 
+@synthesize modelClass = _modelClass;
+@synthesize JSONKeyPathsByPropertyKey = _JSONKeyPathsByPropertyKey;
+@synthesize model = _model;
+
 #pragma mark Convenience methods
 
 + (id)modelOfClass:(Class)modelClass fromJSONDictionary:(NSDictionary *)JSONDictionary error:(NSError **)error {
-	MTLJSONAdapter *adapter = [[self alloc] initWithJSONDictionary:JSONDictionary modelClass:modelClass error:error];
+	MTLJSONAdapter *adapter = [[[self alloc] initWithJSONDictionary:JSONDictionary modelClass:modelClass error:error] autorelease];
 	return adapter.model;
 }
 
 + (NSDictionary *)JSONDictionaryFromModel:(MTLModel<MTLJSONSerializing> *)model {
-	MTLJSONAdapter *adapter = [[self alloc] initWithModel:model];
+	MTLJSONAdapter *adapter = [[[self alloc] initWithModel:model] autorelease];
 	return adapter.JSONDictionary;
 }
 
@@ -127,7 +131,7 @@ static NSString * const MTLJSONAdapterThrownExceptionErrorKey = @"MTLJSONAdapter
 				value = [transformer transformedValue:value] ?: NSNull.null;
 			}
 
-			dictionaryValue[propertyKey] = value;
+			[dictionaryValue setObject: value forKey:propertyKey];
 		} @catch (NSException *ex) {
 			NSLog(@"*** Caught exception %@ parsing JSON key path \"%@\" from: %@", ex, JSONKeyPath, JSONDictionary);
 
@@ -232,7 +236,7 @@ static NSString * const MTLJSONAdapterThrownExceptionErrorKey = @"MTLJSONAdapter
 - (NSString *)JSONKeyPathForKey:(NSString *)key {
 	NSParameterAssert(key != nil);
 
-	id JSONKeyPath = self.JSONKeyPathsByPropertyKey[key];
+	id JSONKeyPath = [self.JSONKeyPathsByPropertyKey objectForKey:key];
 	if ([JSONKeyPath isEqual:NSNull.null]) return nil;
 
 	if (JSONKeyPath == nil) {

@@ -43,7 +43,7 @@ it(@"should initialize to default values with a nil dictionary", ^{
 	expect(dictionaryModel).notTo.beNil();
 	expect(error).to.beNil();
 
-	MTLTestModel *defaultModel = [[MTLTestModel alloc] init];
+	MTLTestModel *defaultModel = [[[MTLTestModel alloc] init] autorelease];
 	expect(dictionaryModel).to.equal(defaultModel);
 });
 
@@ -82,14 +82,14 @@ describe(@"with a dictionary of values", ^{
 	it(@"should compare equal to a matching model", ^{
 		expect(model).to.equal(model);
 
-		MTLTestModel *matchingModel = [[MTLTestModel alloc] initWithDictionary:values error:NULL];
+		MTLTestModel *matchingModel = [[[MTLTestModel alloc] initWithDictionary:values error:NULL] autorelease];
 		expect(model).to.equal(matchingModel);
 		expect(model.hash).to.equal(matchingModel.hash);
 		expect(model.dictionaryValue).to.equal(matchingModel.dictionaryValue);
 	});
 
 	it(@"should not compare equal to different model", ^{
-		MTLTestModel *differentModel = [[MTLTestModel alloc] init];
+		MTLTestModel *differentModel = [[[MTLTestModel alloc] init] autorelease];
 		expect(model).notTo.equal(differentModel);
 		expect(model.dictionaryValue).notTo.equal(differentModel.dictionaryValue);
 	});

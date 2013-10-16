@@ -45,7 +45,7 @@ static NSSet *encodablePropertyKeysForClass(Class modelClass) {
 static void verifyAllowedClassesByPropertyKey(Class modelClass) {
 	NSDictionary *allowedClasses = [modelClass allowedSecureCodingClassesByPropertyKey];
 
-	NSMutableSet *specifiedPropertyKeys = [[NSMutableSet alloc] initWithArray:allowedClasses.allKeys];
+	NSMutableSet *specifiedPropertyKeys = [[[NSMutableSet alloc] initWithArray:allowedClasses.allKeys] autorelease];
 	[specifiedPropertyKeys minusSet:encodablePropertyKeysForClass(modelClass)];
 
 	if (specifiedPropertyKeys.count > 0) {
@@ -77,7 +77,7 @@ static void verifyAllowedClassesByPropertyKey(Class modelClass) {
 		};
 
 		MTLModelEncodingBehavior behavior = (attributes->weak ? MTLModelEncodingBehaviorConditional : MTLModelEncodingBehaviorUnconditional);
-		behaviors[key] = @(behavior);
+		[behaviors setObject: @(behavior) forKey: key];
 	}
 
 	return behaviors;
@@ -106,13 +106,13 @@ static void verifyAllowedClassesByPropertyKey(Class modelClass) {
 		// If the property is not of object or class type, assume that it's
 		// a primitive which would be boxed into an NSValue.
 		if (attributes->type[0] != '@' && attributes->type[0] != '#') {
-			allowedClasses[key] = @[ NSValue.class ];
+			[allowedClasses setObject:@[ NSValue.class ] forKey:key];
 			continue;
 		}
 
 		// Omit this property from the dictionary if its class isn't known.
 		if (attributes->objectClass != nil) {
-			allowedClasses[key] = @[ attributes->objectClass ];
+			[allowedClasses setObject: @[ attributes->objectClass ] forKey:key];
 		}
 	}
 
@@ -142,7 +142,7 @@ static void verifyAllowedClassesByPropertyKey(Class modelClass) {
 	}
 
 	if (coderRequiresSecureCoding(coder)) {
-		NSArray *allowedClasses = self.class.allowedSecureCodingClassesByPropertyKey[key];
+		NSArray *allowedClasses = [self.class.allowedSecureCodingClassesByPropertyKey objectForKey:key];
 		NSAssert(allowedClasses != nil, @"No allowed classes specified for securely decoding key \"%@\" on %@", key, self.class);
 		
 		return [coder decodeObjectOfClasses:[NSSet setWithArray:allowedClasses] forKey:key];
@@ -189,13 +189,13 @@ static void verifyAllowedClassesByPropertyKey(Class modelClass) {
 	}
 
 	NSSet *propertyKeys = self.class.propertyKeys;
-	NSMutableDictionary *dictionaryValue = [[NSMutableDictionary alloc] initWithCapacity:propertyKeys.count];
+	NSMutableDictionary *dictionaryValue = [[[NSMutableDictionary alloc] initWithCapacity:propertyKeys.count] autorelease];
 
 	for (NSString *key in propertyKeys) {
 		id value = [self decodeValueForKey:key withCoder:coder modelVersion:version.unsignedIntegerValue];
 		if (value == nil) continue;
 
-		dictionaryValue[key] = value;
+		[dictionaryValue setObject: value forKey: key];
 	}
 
 	NSError *error = nil;
@@ -215,7 +215,7 @@ static void verifyAllowedClassesByPropertyKey(Class modelClass) {
 		// Skip nil values.
 		if ([value isEqual:NSNull.null]) return;
 
-		switch ([encodingBehaviors[key] unsignedIntegerValue]) {
+		switch ([[encodingBehaviors objectForKey:key] unsignedIntegerValue]) {
 			// This will also match a nil behavior.
 			case MTLModelEncodingBehaviorExcluded:
 				break;
@@ -229,7 +229,7 @@ static void verifyAllowedClassesByPropertyKey(Class modelClass) {
 				break;
 
 			default:
-				NSAssert(NO, @"Unrecognized encoding behavior %@ for key \"%@\"", encodingBehaviors[key], key);
+				NSAssert(NO, @"Unrecognized encoding behavior %@ for key \"%@\"", [encodingBehaviors objectForKey: key], key);
 		}
 	}];
 }

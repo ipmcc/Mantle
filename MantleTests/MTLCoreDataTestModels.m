@@ -10,6 +10,12 @@
 
 @implementation MTLParentTestModel
 
+@synthesize numberString = _numberString;
+@synthesize date = _date;
+@synthesize requiredString = _requiredString;
+@synthesize orderedChildren = _orderedChildren;
+@synthesize unorderedChildren = _unorderedChildren;
+
 + (NSString *)managedObjectEntityName {
 	return @"Parent";
 }
@@ -44,6 +50,10 @@
 
 @implementation MTLChildTestModel
 
+@synthesize childID = _childID;
+@synthesize parent1 = _parent1;
+@synthesize parent2 = _parent2;
+
 + (NSString *)managedObjectEntityName {
 	return @"Child";
 }
@@ -67,6 +77,8 @@
 @end
 
 @implementation MTLFailureModel
+
+@synthesize notSupported = _notSupported;
 
 + (NSDictionary *)managedObjectKeysByPropertyKey {
 	return @{};

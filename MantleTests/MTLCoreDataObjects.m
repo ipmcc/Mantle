@@ -38,19 +38,19 @@
 
 // Working around http://openradar.appspot.com/10114310
 - (void)addOrderedChildrenObject:(MTLChild*)child {
-	NSMutableOrderedSet *mutableCopy = [self.orderedChildren mutableCopy];
+	NSMutableOrderedSet *mutableCopy = [[self.orderedChildren mutableCopy] autorelease];
 
 	[mutableCopy addObject:child];
 
-	self.orderedChildren = [mutableCopy copy];
+	self.orderedChildren = [[mutableCopy copy] autorelease];
 }
 
 - (void)removeOrderedChildrenObject:(MTLChild*)child {
-	NSMutableOrderedSet *mutableCopy = [self.orderedChildren mutableCopy];
+	NSMutableOrderedSet *mutableCopy = [[self.orderedChildren mutableCopy] autorelease];
 
 	[mutableCopy removeObject:child];
 
-	self.orderedChildren = [mutableCopy copy];
+	self.orderedChildren = [[mutableCopy copy] autorelease];
 }
 
 @end

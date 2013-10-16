@@ -22,7 +22,7 @@
 }
 
 - (instancetype)mtl_arrayByRemovingObject:(id)object {
-	NSMutableArray *result = [self mutableCopy];
+	NSMutableArray *result = [[self mutableCopy] autorelease];
 	[result removeObject:object];
 	return result;
 }

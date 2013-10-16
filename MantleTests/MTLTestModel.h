@@ -14,6 +14,13 @@ extern const NSInteger MTLTestModelNameMissing;
 @end
 
 @interface MTLTestModel : MTLModel <MTLJSONSerializing>
+{
+	NSString* _name;
+	NSUInteger _count;
+	NSString* _nestedName;
+	NSString* _dynamicName;
+	MTLEmptyTestModel* _weakModel;
+}
 
 // Defaults to 1. This changes the behavior of some of the receiver's methods to
 // emulate a migration.
@@ -46,6 +53,9 @@ extern const NSInteger MTLTestModelNameMissing;
 @end
 
 @interface MTLValidationModel : MTLModel
+{
+	NSString* _name;
+}
 
 // Defaults to nil, which is not considered valid.
 @property (nonatomic, copy) NSString *name;

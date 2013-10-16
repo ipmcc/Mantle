@@ -152,6 +152,11 @@ extern const NSInteger MTLManagedObjectAdapterErrorUnsupportedRelationshipClass;
 
 // Converts a MTLModel object to and from an NSManagedObject.
 @interface MTLManagedObjectAdapter : NSObject
+{
+	Class _modelClass;
+	NSDictionary* _managedObjectKeysByPropertyKey;
+	NSDictionary* _relationshipModelClassesByPropertyKey;
+}
 
 // Attempts to deserialize an NSManagedObject into a MTLModel object.
 //

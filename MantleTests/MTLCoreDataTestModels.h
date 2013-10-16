@@ -11,6 +11,13 @@
 
 // Corresponds to the `Parent` entity.
 @interface MTLParentTestModel : MTLModel <MTLManagedObjectSerializing>
+{
+	NSString* _numberString;
+	NSDate* _date;
+	NSString* _requiredString;
+	NSArray* _orderedChildren;
+	NSSet* _unorderedChildren;
+}
 
 // Associated with the `number` attribute.
 @property (nonatomic, copy) NSString *numberString;
@@ -25,6 +32,11 @@
 
 // Corresponds to the `Child` entity.
 @interface MTLChildTestModel : MTLModel <MTLManagedObjectSerializing>
+{
+	NSUInteger _childID;
+	MTLParentTestModel* _parent1;
+	MTLParentTestModel* _parent2;
+}
 
 // Associated with the `id` attribute.
 @property (nonatomic, assign) NSUInteger childID;
@@ -37,7 +49,9 @@
 // Claims to correspond to the `Empty` entity which lacks the `notSupported`
 // property.
 @interface MTLFailureModel : MTLModel <MTLManagedObjectSerializing>
-
+{
+	NSString* _notSupported;
+}
 // Not present in the `Empty` entity.
 @property (nonatomic, assign) NSString *notSupported;
 

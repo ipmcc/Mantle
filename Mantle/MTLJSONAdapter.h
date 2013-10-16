@@ -65,6 +65,11 @@ extern const NSInteger MTLJSONAdapterErrorInvalidJSONDictionary;
 
 // Converts a MTLModel object to and from a JSON dictionary.
 @interface MTLJSONAdapter : NSObject
+{
+	NSDictionary* _JSONKeyPathsByPropertyKey;
+	Class _modelClass;
+	MTLModel<MTLJSONSerializing>* _model;
+}
 
 // The model object that the receiver was initialized with, or that the receiver
 // parsed from a JSON dictionary.
